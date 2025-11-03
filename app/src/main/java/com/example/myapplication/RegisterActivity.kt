@@ -51,6 +51,15 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         btnRegister.setOnClickListener { validateInputs() }
+
+        val fields = listOf(edtFirstName, edtLastName, edtBirthday, edtAddress, edtEmail)
+        for (field in fields) {
+            field.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    field.setBackgroundColor(Color.parseColor("#EEEEEE"))
+                }
+            }
+        }
     }
 
     private fun validateInputs() {
@@ -60,20 +69,16 @@ class RegisterActivity : AppCompatActivity() {
 
         for (field in fields) {
             if (field.text.toString().trim().isEmpty()) {
-                field.setBackgroundColor(Color.parseColor("#FFCDD2")) // Đỏ nhạt
+                field.setBackgroundColor(Color.parseColor("#FFCDD2"))
                 allValid = false
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             } else {
-                field.setBackgroundColor(Color.parseColor("#EEEEEE")) // Màu nền gốc
+                field.setBackgroundColor(Color.parseColor("#EEEEEE"))
             }
         }
 
         if (radioGroupGender.checkedRadioButtonId == -1) {
-            Toast.makeText(this, "Please select gender", Toast.LENGTH_SHORT).show()
-            allValid = false
-        }
-
-        if (!checkBoxAgree.isChecked) {
-            Toast.makeText(this, "Please agree to terms", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             allValid = false
         }
 
