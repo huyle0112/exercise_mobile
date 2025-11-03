@@ -77,6 +77,7 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
+
         if (radioGroupGender.checkedRadioButtonId == -1) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             allValid = false
