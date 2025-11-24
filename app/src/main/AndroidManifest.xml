@@ -45,7 +45,28 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.MyApplication">
         </activity>
+        <activity
+            android:name=".studentlistapp.StudentListActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MyApplication">
+        </activity>
+        <activity android:name=".gmailapp.GmailDetailActivity" />
+        <activity
+            android:name=".gmailapp.GmailListActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MyApplication">
+        </activity>
+        <activity android:name=".playstore.DetailActivity"/>
+        <activity
+            android:name=".playstore.PlayStoreActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MyApplication">
+        </activity>
+
 
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
