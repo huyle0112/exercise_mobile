@@ -51,6 +51,19 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.MyApplication">
         </activity>
+        <!-- AddStudentActivity - Màn hình thêm sinh viên -->
+        <activity
+            android:name=".studentlistapp.AddStudentActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:parentActivityName=".studentlistapp.StudentListActivity"
+            android:exported="false" />
+
+        <!-- StudentDetailActivity - Màn hình chi tiết sinh viên -->
+        <activity
+            android:name=".studentlistapp.StudentDetailActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:parentActivityName=".studentlistapp.StudentListActivity"
+            android:exported="false" />
         <activity android:name=".gmailapp.GmailDetailActivity" />
         <activity
             android:name=".gmailapp.GmailListActivity"

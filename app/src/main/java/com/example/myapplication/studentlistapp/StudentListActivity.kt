@@ -1,100 +1,115 @@
 package com.example.myapplication.studentlistapp
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ListView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.R
-import com.example.myapplication.studentlistapp.StudentAdapter
 
-class StudentListActivity  : AppCompatActivity() {
+class StudentListActivity : AppCompatActivity() {
 
-    private lateinit var edtName: EditText
-    private lateinit var edtMssv: EditText
-    private lateinit var btnAdd: Button
-    private lateinit var btnUpdate: Button
     private lateinit var listView: ListView
-
-    private val studentList = mutableListOf<Student>()
     private lateinit var adapter: StudentAdapter
+    private val studentList = mutableListOf<Student>()
 
-    private var selectedIndex = -1
+    companion object {
+        const val REQUEST_ADD_STUDENT = 1
+        const val REQUEST_EDIT_STUDENT = 2
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.student_list)
 
-        edtName = findViewById(R.id.edtName)
-        edtMssv = findViewById(R.id.edtMssv)
-        btnAdd = findViewById(R.id.btnAdd)
-        btnUpdate = findViewById(R.id.btnUpdate)
         listView = findViewById(R.id.listView)
 
-        studentList.add(Student("Nguyen Van A","2022001"))
-        studentList.add(Student("Nguyen Van B","2022002"))
-        studentList.add(Student("Nguyen Van C","2022003"))
-        studentList.add(Student("Nguyen Van D","2022004"))
-        studentList.add(Student("Nguyen Van E","2022005"))
-        studentList.add(Student("Nguyen Van F","2022006"))
-        studentList.add(Student("Nguyen Van G","2022007"))
-        studentList.add(Student("Nguyen Van H","2022008"))
-        studentList.add(Student("Nguyen Van J","2022009"))
-        studentList.add(Student("Nguyen Van K","2022010"))
-        studentList.add(Student("Nguyen Van L","2022011"))
+        // Khởi tạo dữ liệu mẫu
+        initSampleData()
 
+        // Khởi tạo adapter
         adapter = StudentAdapter(
             this,
             studentList,
             onItemClick = { student ->
-                loadStudent(student)
+                openDetailActivity(student)
             },
             onDeleteClick = { position ->
-                studentList.removeAt(position)
-                adapter.notifyDataSetChanged()
+                showDeleteConfirmDialog(position)
             }
         )
 
         listView.adapter = adapter
-
-        btnAdd.setOnClickListener { addStudent() }
-        btnUpdate.setOnClickListener { updateStudent() }
     }
 
-    private fun addStudent() {
-        val name = edtName.text.toString()
-        val mssv = edtMssv.text.toString()
-
-        if (name.isEmpty() || mssv.isEmpty()) return
-
-        studentList.add(Student(name, mssv))
-        adapter.notifyDataSetChanged()
-
-        edtName.text.clear()
-        edtMssv.text.clear()
+    private fun initSampleData() {
+        studentList.add(Student("20210001", "Nguyễn Văn A", "0901234567", "Hà Nội"))
+        studentList.add(Student("20210002", "Trần Thị B", "0912345678", "TP HCM"))
+        studentList.add(Student("20210003", "Lê Văn C", "0923456789", "Đà Nẵng"))
     }
 
-    private fun loadStudent(student: Student) {
-        edtName.setText(student.name)
-        edtMssv.setText(student.mssv)
-        selectedIndex = studentList.indexOf(student)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
     }
 
-    private fun updateStudent() {
-        if (selectedIndex == -1) return
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_add_student -> {
+                openAddActivity()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
-        studentList[selectedIndex].name = edtName.text.toString()
-        studentList[selectedIndex].mssv = edtMssv.text.toString()
+    private fun openAddActivity() {
+        val intent = Intent(this, AddStudentActivity::class.java)
+        startActivityForResult(intent, REQUEST_ADD_STUDENT)
+    }
 
-        adapter.notifyDataSetChanged()
+    private fun openDetailActivity(student: Student) {
+        val intent = Intent(this, StudentDetailActivity::class.java)
+        intent.putExtra("student", student)
+        intent.putExtra("position", studentList.indexOf(student))
+        startActivityForResult(intent, REQUEST_EDIT_STUDENT)
+    }
 
-        edtName.text.clear()
-        edtMssv.text.clear()
-        selectedIndex = -1
+    private fun showDeleteConfirmDialog(position: Int) {
+        AlertDialog.Builder(this)
+            .setTitle("Xác nhận xóa")
+            .setMessage("Bạn có chắc chắn muốn xóa sinh viên ${studentList[position].name}?")
+            .setPositiveButton("Xóa") { _, _ ->
+                studentList.removeAt(position)
+                adapter.notifyDataSetChanged()
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK && data != null) {
+            when (requestCode) {
+                REQUEST_ADD_STUDENT -> {
+                    val newStudent = data.getParcelableExtra<Student>("student")
+                    newStudent?.let {
+                        studentList.add(it)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+                REQUEST_EDIT_STUDENT -> {
+                    val updatedStudent = data.getParcelableExtra<Student>("student")
+                    val position = data.getIntExtra("position", -1)
+                    if (updatedStudent != null && position != -1) {
+                        studentList[position] = updatedStudent
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+            }
+        }
     }
 }
-
-data class Student(
-    var name: String,
-    var mssv: String
-)
